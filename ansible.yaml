@@ -1,0 +1,26 @@
+- name: Setup EC2 for Yii2 app
+  hosts: web
+  become: yes
+
+  tasks:
+    - name: Install dependencies
+      apt:
+        name: ['docker.io', 'nginx', 'git']
+        state: present
+        update_cache: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-linux-x86_64
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Initialize Docker Swarm
+      shell: docker swarm init || true
+
